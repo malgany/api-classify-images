@@ -1,4 +1,3 @@
-
 const canvas = require('canvas');
 require('@tensorflow/tfjs-node'); // Load before @teachablemachine/image
 const tmImage = require('@teachablemachine/image')
@@ -7,7 +6,7 @@ const express = require('express');
 const app = express();
 
 app.use(require('body-parser').raw({ type: 'image/png', limit: '3MB' }));
-app.use(express.static('models/1'));
+app.use(express.static('models/salas'));
 
 addEndpoint("test", 'http://localhost:3000/'); //You can add as many endpoints as you like
 
