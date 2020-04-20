@@ -7,9 +7,9 @@ const express = require('express');
 const app = express();
 
 app.use(require('body-parser').raw({ type: 'image/png', limit: '3MB' }));
+app.use(express.static('models/1'));
 
-
-addEndpoint("test", 'https://teachablemachine.withgoogle.com/models/yourmodel/'); //You can add as many endpoints as you like
+addEndpoint("test", 'http://localhost:3000/'); //You can add as many endpoints as you like
 
 const JSDOM = require('jsdom').JSDOM;
 global.window = new JSDOM(`<body><script>document.body.appendChild(document.createElement("hr"));</script></body>`).window;
