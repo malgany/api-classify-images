@@ -1,11 +1,17 @@
-const canvas = require('canvas');
-require('@tensorflow/tfjs-node'); // Load before @teachablemachine/image
+const canvas = require('canvas')
+require('@tensorflow/tfjs-node') // Load before @teachablemachine/image
 const tmImage = require('@teachablemachine/image')
-const express = require('express');
+const express = require('express')
+const fs = require('fs')
+const multer = require('multer')
+var storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+
+
 
 const app = express();
 
-app.use(require('body-parser').raw({ type: 'image/png', limit: '3MB' }));
+app.use(require('body-parser').raw({type: 'image/png', limit: '3MB'}));
 app.use(express.static('models/salas'));
 
 addEndpoint("test", 'http://localhost:3000/'); //You can add as many endpoints as you like
@@ -19,16 +25,17 @@ app.listen(3000, () => {
     console.log("Server running on port 3000");
 });
 
-async function addEndpoint(name, URL){
+async function addEndpoint(name, URL) {
     let model;
     const modelURL = URL + 'model.json';
     const metadataURL = URL + 'metadata.json';
     model = await tmImage.load(modelURL, metadataURL);
-    app.post('/' + name, (req, res, next) => {
-        getPrediction(model, _arrayBufferToBase64(req.body), (output) => {
-            res.send(output);
+    app.post('/' + name, upload.single('image'), (req, res) => {
+        console.log(req.file)
+        getPrediction(model, _arrayBufferToBase64(req.file.buffer), (output) => {
+            res.send(output)
+            //return
         });
-      
     });
 }
 
@@ -44,16 +51,18 @@ async function getPrediction(model, data, fu) {
         console.log(prediction);
         fu(prediction);
     }
-    img.onerror = err => { throw err; }
+    img.onerror = err => {
+        throw err;
+    }
     img.src = "data:image/png;base64," + data;
 }
 
-function _arrayBufferToBase64( buffer ) {
+function _arrayBufferToBase64(buffer) {
     var binary = '';
-    var bytes = new Uint8Array( buffer );
+    var bytes = new Uint8Array(buffer);
     var len = bytes.byteLength;
     for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode( bytes[ i ] );
+        binary += String.fromCharCode(bytes[i]);
     }
-    return window.btoa( binary );
+    return window.btoa(binary);
 }
