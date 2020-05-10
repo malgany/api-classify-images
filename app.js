@@ -5,16 +5,20 @@ const express = require('express')
 const fs = require('fs')
 const multer = require('multer')
 var storage = multer.memoryStorage()
-const upload = multer({ storage: storage })
-
-
-
+const upload = multer({storage: storage})
 const app = express();
 
-app.use(require('body-parser').raw({type: 'image/png', limit: '3MB'}));
-app.use(express.static('models/salas'));
+const url = 'http://localhost:3000/'
 
-addEndpoint("test", 'http://localhost:3000/'); //You can add as many endpoints as you like
+app.use(require('body-parser').raw({type: 'image/png', limit: '3MB'}));
+app.use(express.static('models'));
+
+addEndpoint("batalha", url);
+addEndpoint("chave", url);
+addEndpoint("grupo", url);
+addEndpoint("notificacoes", url);
+addEndpoint("saida", url);
+addEndpoint("salas", url);
 
 const JSDOM = require('jsdom').JSDOM;
 global.window = new JSDOM(`<body><script>document.body.appendChild(document.createElement("hr"));</script></body>`).window;
@@ -26,15 +30,14 @@ app.listen(3000, () => {
 });
 
 async function addEndpoint(name, URL) {
-    let model;
-    const modelURL = URL + 'model.json';
-    const metadataURL = URL + 'metadata.json';
-    model = await tmImage.load(modelURL, metadataURL);
+    const modelURL = URL + name + '/model.json';
+    const metadataURL = URL + name + '/metadata.json';
+    let model = await tmImage.load(modelURL, metadataURL);
     app.post('/' + name, upload.single('image'), (req, res) => {
         console.log(req.file)
         getPrediction(model, _arrayBufferToBase64(req.file.buffer), (output) => {
             res.send(output)
-            //return
+            return
         });
     });
 }
