@@ -1,4 +1,4 @@
-# teachablemachine-node-example
+# teachablemachine-node
 Showing a workaround to get get teachablemachine's tf.js models running in node and beeing able to post images with json feedback
 ## Setup
 1) Run "npm install"
